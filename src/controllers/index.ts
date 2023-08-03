@@ -1,3 +1,3 @@
-import { login } from "./sessionController";
+import { login, logout } from "./sessionController";
 
-export { login };
+export { login, logout };
