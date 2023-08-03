@@ -1,0 +1,46 @@
+{
+  "name": "trekanicserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "tsc && node dist/app.js",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zbreakmath/trekanicserver.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zbreakmath/trekanicserver/issues"
+  },
+  "homepage": "https://github.com/Zbreakmath/trekanicserver#readme",
+  "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/express": "^4.17.1",
+    "@types/express-session": "^1.17.7",
+    "@types/passport-local-mongoose": "^6.1.1",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "body-parser": "^1.20.2",
+    "eslint": "^8.46.0",
+    "express-session": "^1.17.3",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "epxress": "^0.0.1-security",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.2.0",
+    "http-status-codes": "^2.2.0",
+    "mongoose": "^7.4.1",
+    "nodemon": "^3.0.1",
+    "passport": "^0.6.0",
+    "passport-local-mongoose": "^8.0.0"
+  }
+}
