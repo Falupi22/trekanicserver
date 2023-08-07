@@ -2,13 +2,13 @@ import express from 'express';
 import cors from 'cors'
 import DOMAIN, { PORT } from './constants';
 import bodyParser from 'body-parser';
-import passport, { use } from 'passport';
+import passport from 'passport';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import passportLocalMongoose from "passport-local-mongoose"
-import sessionRouter from './routers/sessionRouter';
 import { User, setUserPlugin, setUserModel } from './models';
 import { config } from 'dotenv';
+import { appointmentsRouter, sessionRouter } from './routers';
 
 const app = express();
 function connectToDB() {
@@ -26,14 +26,15 @@ function setMiddlewares() {
         resave: false,
         saveUninitialized: false
     }));
-    app.use(passport.initialize())
-    app.use(passport.session())
+    app.use(passport.initialize());
+    app.use(passport.session());
     // Allows access to the trekanic site only!
     app.use(cors({
         origin: DOMAIN
-    })) 
-    // Adds all the session routes
-    app.use(sessionRouter)
+    }));
+    // Adds all the routes
+    app.use(sessionRouter);
+    app.use(appointmentsRouter);
 }
 
 function setSchemaPlugins() {
@@ -60,7 +61,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-
-function cookieParser(): any {
-    throw new Error('Function not implemented.');
-}

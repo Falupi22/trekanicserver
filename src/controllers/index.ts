@@ -1,3 +1,4 @@
+import { getAppointments } from "./appointmentsController";
 import { login, logout } from "./sessionController";
 
-export { login, logout };
+export { login, logout, getAppointments };
