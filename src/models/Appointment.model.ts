@@ -4,7 +4,9 @@ export const appointmentSchema = new mongoose.Schema ({
     category: String,
     datetime: Date,
     description: String,
-    customerId: mongoose.Types.ObjectId
+    customer: mongoose.Types.ObjectId,
+    mechanic: mongoose.Types.ObjectId,
+    product: mongoose.Types.ObjectId
   });
 
 const Appointment = mongoose.model("Appointment", appointmentSchema, "appointments");

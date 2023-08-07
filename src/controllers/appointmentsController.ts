@@ -9,7 +9,8 @@ export const getAppointments = asyncHandler(async (req, res, next) => {
     if (req.isAuthenticated()) {
         let user = await User.findOne({username: req.user.username});
 
-        appointments = await Appointment.find({customerId: user._id});
+        appointments = await Appointment.find({customer: user._id});
+        statusCode = HttpStatus.OK
     }
     else {
         statusCode = HttpStatus.FORBIDDEN;
