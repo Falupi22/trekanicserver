@@ -1,4 +1,4 @@
 import { User, setUserModel, setUserPlugin } from "./User.model";
-import Appointment from "./Appointment.model";
+import Appointment, { AppointmentModel } from "./Appointment.model";
 
-export { User, setUserModel, setUserPlugin, Appointment }
+export { User, setUserModel, setUserPlugin, Appointment, AppointmentModel }
