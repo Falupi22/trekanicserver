@@ -1,6 +1,4 @@
 import { Router } from "express";
-import passport from "passport";
-import { User } from "../models";
 import { login, logout } from "../controllers"
 
 const sessionRouter = Router();

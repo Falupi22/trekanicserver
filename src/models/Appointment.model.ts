@@ -1,9 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 interface AppointmentSchema {
-  category: mongoose.Types.ObjectId,
+  issue: mongoose.Types.ObjectId,
   datetime: Date,
-  description: String,
+  description: string,
   customer: mongoose.Types.ObjectId,
   mechanic: mongoose.Types.ObjectId,
   product: mongoose.Types.ObjectId
@@ -12,7 +12,7 @@ interface AppointmentSchema {
 export interface Appointment extends AppointmentSchema, Document {}
 
 export const appointmentSchema = new mongoose.Schema<Appointment> ({
-    category: {type: Schema.Types.ObjectId, required: true},
+    issue: {type: Schema.Types.ObjectId, required: true},
     datetime: {type: Date, required: true},
     description: {type: String, required: true},
     customer: {type: Schema.Types.ObjectId, required: true},
