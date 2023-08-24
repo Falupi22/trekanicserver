@@ -112,8 +112,7 @@ class AppointmentTime {
 
         const newCurrentDate: Date = new Date(this.datetime.getFullYear(), this.datetime.getMonth(), this.datetime.getDate());
         const appointmentCurrentDate = new Date(appointmentDateTime.getFullYear(),
-        appointmentDateTime.getMonth(), appointmentDateTime.getDate());
-
+                                                appointmentDateTime.getMonth(), appointmentDateTime.getDate());
 
         if (newCurrentDate.getTime() == appointmentCurrentDate.getTime()) {
             result = 0;
