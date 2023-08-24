@@ -21,6 +21,7 @@ function setMiddlewares() {
     app.use(bodyParser.urlencoded({
         extended: true
     }));
+    app.use(express.json())
     app.use(session({
         secret: process.env.SECRET_CODE,
         resave: false,
