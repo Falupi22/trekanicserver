@@ -80,34 +80,7 @@ export const createAppointment = asyncHandler(async (req, res) => {
             appointmentIssue.duration
         );
 
-        const mechanics = await MechanicModel.find({});
-        const freeMechanics: Mechanic[] = await Promise.all(
-            mechanics.map(async (mechanic) => {
-                const appointmentTimes = await Promise.all(
-                    mechanic.appointments.map(async (appointmentId) => {
-                        try {
-                            const appointment: Appointment = await AppointmentModel.findById(appointmentId);
-                            const issue: Issue = await IssueModel.findById(appointment.issue);
-                            return new AppointmentTime(appointment.datetime, issue.duration);
-                        } catch (error) {
-                            console.log(error);
-                            return null;
-                        }
-                    })
-                );
-
-                const isMechanicFree = appointmentTimes.every((appointmentTime) => {
-                    return (
-                        !currentAppointmentTime.isSameDay(appointmentTime) ||
-                        currentAppointmentTime.compareTo(appointmentTime.getEndTime()) === 1 ||
-                        appointmentTime.compareTo(currentAppointmentTime.getEndTime()) === 1
-                    );
-                });
-
-                return isMechanicFree ? mechanic : null;
-            })
-        );
-
+        const freeMechanics: Mechanic[] = await getFreeMechanicsByTime(currentAppointmentTime);
         const availableMechanics = freeMechanics.filter((mechanic) => mechanic !== null);
         
         if (availableMechanics.length > 0) {
@@ -151,9 +124,10 @@ export const editAppointment = asyncHandler(async (req, res) => {
         const editedAppointment = jsonpatch.applyPatch(originalAppointment, appointmentPatch).newDocument;
         const appointmentHour = editedAppointment.datetime.getHours();
 
-        if (editedAppointment.description.length > 250)
+        if (editedAppointment.description.length > 250) {
             res.status(HttpStatus.BAD_REQUEST).send();
             return;
+        }
 
         if (originalAppointment.datetime == editedAppointment.datetime || appointmentHour > openingTime && appointmentHour < closingTime) {
             const appointmentIssue = await IssueModel.findById(editedAppointment.issue);
@@ -272,4 +246,4 @@ class AppointmentTime {
 
         return result
     }
-}
+}S

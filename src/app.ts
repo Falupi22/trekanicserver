@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors'
-import DOMAIN, { PORT } from './constants';
+import DOMAIN, { PORT, IP } from './constants';
 import bodyParser from 'body-parser';
 import passport from 'passport';
 import mongoose from 'mongoose';
@@ -21,6 +21,12 @@ function setMiddlewares() {
     app.use(bodyParser.urlencoded({
         extended: true
     }));
+    // Custom middleware to log incoming requests
+    app.use((req, res, next) => {
+        console.log(`Received ${req.method} request at ${req.url}`);
+        next(); // Move to the next middleware or route handler
+    });
+
     app.use(express.json())
     app.use(session({
         secret: process.env.SECRET_CODE,
@@ -31,7 +37,7 @@ function setMiddlewares() {
     app.use(passport.session());
     // Allows access to the trekanic site only!
     app.use(cors({
-        origin: DOMAIN
+        origin: "*"
     }));
     // Adds all the routes
     app.use(sessionRouter);
@@ -57,8 +63,8 @@ setMiddlewares();
 setSchemaPlugins();
 setPassport();
 
-app.listen(PORT, () => {
-   console.log(`Express is listening at http://localhost:${PORT}`);
+app.listen(PORT, IP, () => {
+    console.log(`Express is listening at ${DOMAIN}`);
 });
 
 export default app;
