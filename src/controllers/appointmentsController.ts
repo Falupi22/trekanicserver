@@ -64,9 +64,10 @@ export const createAppointment = asyncHandler(async (req, res) => {
 
         const currentAppointment: Appointment = req.body.appointment;
 
-        if (currentAppointment.description.length > 250)
+        if (currentAppointment.description.length > 250) {
             res.status(HttpStatus.BAD_REQUEST).send();
             return;
+        }
         if (currentAppointment.datetime.getHours() < openingTime ||
             currentAppointment.datetime.getHours() >= closingTime) {
             res.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).send();
@@ -108,8 +109,20 @@ export const createAppointment = asyncHandler(async (req, res) => {
         );
 
         const availableMechanics = freeMechanics.filter((mechanic) => mechanic !== null);
-
+        
+        if (availableMechanics.length > 0) {
+            await AppointmentModel.create({
+                issue: currentAppointment.issue,
+                description: currentAppointment.description,
+                datetime: currentAppointment.datetime,
+                customer: currentAppointment.customer,
+                mechanic: availableMechanics[0]._id,
+                product: currentAppointment.product
+            })
+        }
+        
         const statusCode = availableMechanics.length > 0 ? HttpStatus.OK : HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE;
+        
         res.status(statusCode).send();
     }
     catch (error) {
