@@ -1,4 +1,4 @@
-import { getAppointments, getTakenDates, createAppointment, editAppointment } from "./appointmentsController";
+import { getAppointments, getTakenDates, createAppointment, editAppointment, deleteAppointment } from "./appointmentsController";
 import { login, logout } from "./sessionController";
 
-export { login, logout, getAppointments, getTakenDates, createAppointment, editAppointment };
+export { login, logout, getAppointments, getTakenDates, createAppointment, editAppointment, deleteAppointment };

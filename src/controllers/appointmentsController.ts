@@ -4,7 +4,6 @@ import asyncHandler from "express-async-handler";
 import Mechanic, { MechanicModel } from "../models/Mechanic.model";
 import Issue, { IssueModel } from "../models/Issue.model";
 import jsonpatch from "fast-json-patch";
-import expressAsyncHandler from "express-async-handler";
 
 const openingTime: number = 8;
 const closingTime: number = 22
@@ -138,6 +137,31 @@ export const editAppointment = asyncHandler(async (req, res) => {
             res.status(HttpStatus.BAD_REQUEST).send("Invalid appointment time");
         }
     } catch (error) {
+        console.error("An error occurred:", error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("An error occurred");
+    }
+});
+
+export const deleteAppointment = asyncHandler(async (req, res) => {
+    const appointmentId = req.params.id;
+
+    try {
+        if (!req.isAuthenticated()) {
+            res.status(HttpStatus.UNAUTHORIZED).send();
+            return;
+        }
+
+        const originalAppointment: Appointment = await AppointmentModel.findById(appointmentId);
+
+        if (!originalAppointment) {
+            res.status(HttpStatus.NOT_FOUND).send("Appointment not found");
+            return;
+        }
+
+        await AppointmentModel.deleteOne({_id: appointmentId});
+        res.status(HttpStatus.OK).send();
+    }
+    catch (error) {
         console.error("An error occurred:", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("An error occurred");
     }
