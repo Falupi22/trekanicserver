@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors'
-import DOMAIN, { PORT, IP } from './constants';
+import DOMAIN, { PORT, IP, WEB_SERVER_PORT } from './constants';
 import bodyParser from 'body-parser';
 import passport from 'passport';
 import mongoose from 'mongoose';
@@ -9,7 +9,6 @@ import passportLocalMongoose from "passport-local-mongoose"
 import { User, setUserPlugin, setUserModel } from './models';
 import { config } from 'dotenv';
 import { appointmentsRouter, sessionRouter } from './routers';
-import cookieParser from 'cookie-parser';
 
 const app = express();
 function connectToDB() {
@@ -31,7 +30,7 @@ function setMiddlewares() {
     }));
     app.use(express.json());
     app.use(cors({
-        origin: "http://10.0.0.14:5173",
+        origin: `http://${IP}:${WEB_SERVER_PORT}`,
         methods: ["GET, POST"],
         credentials: true
     }));
