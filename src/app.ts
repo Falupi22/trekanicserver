@@ -9,6 +9,7 @@ import passportLocalMongoose from "passport-local-mongoose"
 import { User, setUserPlugin, setUserModel } from './models';
 import { config } from 'dotenv';
 import { appointmentsRouter, sessionRouter } from './routers';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 function connectToDB() {
@@ -18,16 +19,23 @@ function connectToDB() {
 function setMiddlewares() {
     // Using all the files from the public folder
     app.use(express.static("public"));
+    app.use((req, res, next) => {
+        console.log(`Received ${req.method} request at ${req.url} 
+                     with headers: ${JSON.stringify(req.headers)}
+                     with cookies: ${JSON.stringify(req.cookies)}
+                     with body: ${JSON.stringify(req.body)}`);
+        next(); // Move to the next middleware or route handler
+    });
     app.use(bodyParser.urlencoded({
         extended: true
     }));
-    // Custom middleware to log incoming requests
-    app.use((req, res, next) => {
-        console.log(`Received ${req.method} request at ${req.url}`);
-        next(); // Move to the next middleware or route handler
-    });
+    app.use(express.json());
+    app.use(cors({
+        origin: "http://10.0.0.14:5173",
+        methods: ["GET, POST"],
+        credentials: true
+    }));
 
-    app.use(express.json())
     app.use(session({
         secret: process.env.SECRET_CODE,
         resave: false,
@@ -35,13 +43,6 @@ function setMiddlewares() {
     }));
     app.use(passport.initialize());
     app.use(passport.session());
-    // Allows access to the trekanic site only!
-    app.use(cors({
-        origin: "*"
-    }));
-    // Adds all the routes
-    app.use(sessionRouter);
-    app.use(appointmentsRouter);
 }
 
 function setSchemaPlugins() {
@@ -57,11 +58,18 @@ function setPassport() {
     passport.deserializeUser(User.deserializeUser())
 }
 
+function setRoutes() {
+    // Adds all the routes
+    app.use(sessionRouter);
+    app.use(appointmentsRouter);
+}
+
 config();
 connectToDB();
 setMiddlewares();
 setSchemaPlugins();
 setPassport();
+setRoutes();
 
 app.listen(PORT, IP, () => {
     console.log(`Express is listening at ${DOMAIN}`);

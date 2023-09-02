@@ -5,7 +5,6 @@ export let User = null;
 export const userSchema = new mongoose.Schema ({
     email: String,
     password: String,
-    secret: String
   });
 
 export function setUserModel() {
