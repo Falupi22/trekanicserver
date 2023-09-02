@@ -82,7 +82,7 @@ export const createAppointment = asyncHandler(async (req, res) => {
 
         const freeMechanics: Mechanic[] = await getFreeMechanicsByTime(currentAppointmentTime);
         const availableMechanics = freeMechanics.filter((mechanic) => mechanic !== null);
-        
+
         if (availableMechanics.length > 0) {
             await AppointmentModel.create({
                 issue: currentAppointment.issue,
@@ -93,9 +93,9 @@ export const createAppointment = asyncHandler(async (req, res) => {
                 product: currentAppointment.product
             })
         }
-        
+
         const statusCode = availableMechanics.length > 0 ? HttpStatus.OK : HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE;
-        
+
         res.status(statusCode).send();
     }
     catch (error) {
@@ -186,6 +186,24 @@ export const deleteAppointment = asyncHandler(async (req, res) => {
     }
 });
 
+export const getIssues = asyncHandler(async (req, res) => {
+    try {
+        if (!req.isAuthenticated()) {
+            res.status(HttpStatus.UNAUTHORIZED).send();
+            return;
+        }
+
+        const issues: Issue[] = await IssueModel.find({}).populate("category");
+        
+        res.status(HttpStatus.OK).send(issues);
+    }
+    catch (error) {
+        console.error("An error occurred:", error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("An error occurred");
+    }
+});
+
+
 
 const getFreeMechanicsByTime = async (currentAppointmentTime: AppointmentTime) => {
     const mechanics: Mechanic[] = await MechanicModel.find({})
@@ -246,4 +264,4 @@ class AppointmentTime {
 
         return result
     }
-}S
+}
