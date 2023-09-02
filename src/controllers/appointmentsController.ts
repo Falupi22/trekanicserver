@@ -193,8 +193,7 @@ export const getIssues = asyncHandler(async (req, res) => {
             return;
         }
 
-        const issues: Issue[] = await IssueModel.find({}).populate("category");
-        
+        const issues: Issue[] = await IssueModel.find({}).populate('category');
         res.status(HttpStatus.OK).send(issues);
     }
     catch (error) {
