@@ -8,6 +8,6 @@ appointmentsRouter.get('/appointments/dates', getTakenDates)
 appointmentsRouter.post('/appointments/create', createAppointment);
 appointmentsRouter.patch('/appointments/edit', editAppointment);
 appointmentsRouter.delete('/appointments/delete/:id', deleteAppointment);
-appointmentsRouter.get('/issues', getIssues);
+appointmentsRouter.get('/appointments/issues', getIssues);
 
 export default appointmentsRouter;
