@@ -4,8 +4,6 @@ import asyncHandler from "express-async-handler"
 import passport from "passport";
 
 export const login = asyncHandler(async (req, res, next) => {
-    let statusCode: number = HttpStatus.BAD_REQUEST;
-
     const user = User({
         username: req.body.username,
         password: req.body.password
@@ -13,50 +11,36 @@ export const login = asyncHandler(async (req, res, next) => {
 
     if (!req.isAuthenticated()) {
         if (await User.findOne({ username: user.username, password: user.password })) {
-            await new Promise((resolve, reject) => req.login(user, async function (error) {
+            req.login(user, function (error) {
                 if (error) {
                     console.log(error);
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
                 } else {
-                    await new Promise((resolve, reject) => {
-                        passport.authenticate("local", function (error, user, info) {
-                            if (error) {
-                                console.log(error);
-                                statusCode = HttpStatus.UNAUTHORIZED;
-                            }
-                            else {
-                                statusCode = HttpStatus.OK;
-                            }
-
-                            resolve(null);
-                        })(req, res, next);
-                    });
-
-                    resolve(null);
+                    passport.authenticate("local", function (error, user, info) {
+                        if (error) {
+                            console.log(error);
+                            res.status(HttpStatus.UNAUTHORIZED).send();
+                        }
+                        else {
+                            res.status(HttpStatus.OK).send();
+                        }
+                    })(req, res, next);
                 }
-            }));
+            });
         }
+        else {
+            res.status(HttpStatus.NOT_FOUND).send();
+        }
+    } else {
+        res.status(HttpStatus.FORBIDDEN).send();
     }
-    else {
-        statusCode = HttpStatus.FORBIDDEN;
-    }
-
-    res.status(statusCode);
-    res.send();
 });
 
-export const logout = asyncHandler(async (req, res, next) => {
-    let statusCode: number = HttpStatus.FORBIDDEN;
-
+export const logout = asyncHandler(async (req, res) => {
     if (req.isAuthenticated()) {
-        await new Promise((resolve, reject) => {
-            req.logout(null, () => {
-                statusCode = HttpStatus.OK;
-
-                resolve(null);
-            });
-        });
+        req.logout(() => {});
+        res.status(HttpStatus.OK).send();
+    } else {
+        res.status(HttpStatus.FORBIDDEN).send();
     }
-
-    res.status(statusCode);
-    res.send();
 });
