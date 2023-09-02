@@ -9,6 +9,6 @@ const issueCategorySchema: Schema = new mongoose.Schema({
     name: { type: String, require: true }
 });
 
-export const IssueCategoryModel = mongoose.model<IssueCategory>('IssueCategory', issueCategorySchema);
+export const IssueCategoryModel = mongoose.model<IssueCategory>('IssueCategory', issueCategorySchema, 'issueCategories');
 
 export default IssueCategory;
