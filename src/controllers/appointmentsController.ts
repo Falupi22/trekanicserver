@@ -10,21 +10,17 @@ const closingTime: number = 22
 
 export const getAppointments = asyncHandler(async (req, res) => {
     try {
-        let statusCode: number = HttpStatus.BAD_REQUEST;
         let appointments: Appointment[] = []
 
         if (req.isAuthenticated()) {
             const user = await User.findOne({ username: req.user.username });
 
             appointments = await AppointmentModel.find({ customer: user._id });
-            statusCode = HttpStatus.OK
+            res.status(HttpStatus.OK).send(appointments);
         }
         else {
-            statusCode = HttpStatus.FORBIDDEN;
+            res.status(HttpStatus.UNAUTHORIZED).send();
         }
-
-        res.status(statusCode);
-        res.send(appointments);
     }
     catch (error) {
         console.error("An error occurred: ", error);
@@ -34,20 +30,17 @@ export const getAppointments = asyncHandler(async (req, res) => {
 
 export const getTakenDates = asyncHandler(async (req, res) => {
     try {
-        let statusCode: number = HttpStatus.BAD_REQUEST;
         let takenDates: Date[] = [];
 
         if (req.isAuthenticated()) {
             const appointments: Appointment[] = await AppointmentModel.find({});
             takenDates = appointments.map(appointment => appointment.datetime);
-            statusCode = HttpStatus.OK
+            
+            res.status(HttpStatus.OK).send(takenDates);
         }
         else {
-            statusCode = HttpStatus.FORBIDDEN;
+            res.status(HttpStatus.UNAUTHORIZED).send();
         }
-
-        res.status(statusCode);
-        res.send(takenDates);
     }
     catch (error) {
         console.error("An error occurred: ", error);
