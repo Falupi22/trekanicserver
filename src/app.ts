@@ -9,6 +9,7 @@ import passportLocalMongoose from "passport-local-mongoose"
 import { User, setUserPlugin, setUserModel } from './models';
 import { config } from 'dotenv';
 import { appointmentsRouter, sessionRouter } from './routers';
+import ws from './ws';
 
 const app = express();
 function connectToDB() {
@@ -69,6 +70,7 @@ setMiddlewares();
 setSchemaPlugins();
 setPassport();
 setRoutes();
+ws(app);
 
 app.listen(PORT, IP, () => {
     console.log(`Express is listening at ${DOMAIN}`);
