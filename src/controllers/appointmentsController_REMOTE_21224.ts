@@ -15,11 +15,7 @@ export const getAppointments = asyncHandler(async (req, res) => {
         if (req.isAuthenticated()) {
             const user = await User.findOne({ username: req.user.username });
 
-<<<<<<< HEAD
             appointments = await AppointmentModel.find({ customer: user._id }).populate('issue').populate('issueCategory');
-=======
-            appointments = await AppointmentModel.find({ customer: user._id });
->>>>>>> develop
             res.status(HttpStatus.OK).send(appointments);
         }
         else {

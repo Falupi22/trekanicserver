@@ -30,7 +30,7 @@ function setMiddlewares() {
     }));
     app.use(express.json());
     app.use(cors({
-        origin: `http://${IP}:${WEB_SERVER_PORT}`,
+        origin: `http://${IP}:${PORT}`,
         methods: ["GET, POST"],
         credentials: true
     }));
@@ -69,6 +69,13 @@ setMiddlewares();
 setSchemaPlugins();
 setPassport();
 setRoutes();
+
+const publicPath = 'C:\\Libraries\\trekanic\\dist'
+
+app.use(express.static(publicPath))
+app.get('/', (request, response) => {
+    response.sendFile(`${publicPath}\\index.html`)
+})
 
 app.listen(PORT, IP, () => {
     console.log(`Express is listening at ${DOMAIN}`);

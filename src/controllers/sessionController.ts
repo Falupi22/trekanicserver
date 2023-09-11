@@ -19,7 +19,7 @@ export const login = asyncHandler(async (req, res, next) => {
                     passport.authenticate("local", function (error, user, info) {
                         if (error) {
                             console.log(error);
-                            res.status(HttpStatus.UNAUTHORIZED).send();
+                            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
                         }
                         else {
                             res.status(HttpStatus.OK).send();
@@ -32,7 +32,7 @@ export const login = asyncHandler(async (req, res, next) => {
             res.status(HttpStatus.NOT_FOUND).send();
         }
     } else {
-        res.status(HttpStatus.FORBIDDEN).send();
+        res.status(HttpStatus.UNAUTHORIZED).send();
     }
 });
 
@@ -41,6 +41,6 @@ export const logout = asyncHandler(async (req, res) => {
         req.logout(() => {});
         res.status(HttpStatus.OK).send();
     } else {
-        res.status(HttpStatus.FORBIDDEN).send();
+        res.status(HttpStatus.UNAUTHORIZED).send();
     }
 });
