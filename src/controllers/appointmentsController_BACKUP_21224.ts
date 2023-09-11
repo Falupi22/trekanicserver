@@ -16,10 +16,10 @@ export const getAppointments = asyncHandler(async (req, res) => {
             const user = await User.findOne({ username: req.user.username });
 
 <<<<<<< HEAD
-            appointments = await AppointmentModel.find({ customer: user._id }).populate('issue').populate('issueCategory');
-=======
             appointments = await AppointmentModel.find({ customer: user._id });
->>>>>>> develop
+=======
+            appointments = await AppointmentModel.find({ customer: user._id }).populate('issue').populate('issueCategory');
+>>>>>>> feature/populate-appointments
             res.status(HttpStatus.OK).send(appointments);
         }
         else {

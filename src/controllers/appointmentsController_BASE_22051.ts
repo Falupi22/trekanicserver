@@ -10,21 +10,21 @@ const closingTime: number = 22
 
 export const getAppointments = asyncHandler(async (req, res) => {
     try {
+        let statusCode: number = HttpStatus.BAD_REQUEST;
         let appointments: Appointment[] = []
 
         if (req.isAuthenticated()) {
             const user = await User.findOne({ username: req.user.username });
 
-<<<<<<< HEAD
-            appointments = await AppointmentModel.find({ customer: user._id }).populate('issue').populate('issueCategory');
-=======
             appointments = await AppointmentModel.find({ customer: user._id });
->>>>>>> develop
-            res.status(HttpStatus.OK).send(appointments);
+            statusCode = HttpStatus.OK
         }
         else {
-            res.status(HttpStatus.UNAUTHORIZED).send();
+            statusCode = HttpStatus.FORBIDDEN;
         }
+
+        res.status(statusCode);
+        res.send(appointments);
     }
     catch (error) {
         console.error("An error occurred: ", error);
@@ -34,17 +34,20 @@ export const getAppointments = asyncHandler(async (req, res) => {
 
 export const getTakenDates = asyncHandler(async (req, res) => {
     try {
+        let statusCode: number = HttpStatus.BAD_REQUEST;
         let takenDates: Date[] = [];
 
         if (req.isAuthenticated()) {
             const appointments: Appointment[] = await AppointmentModel.find({});
             takenDates = appointments.map(appointment => appointment.datetime);
-            
-            res.status(HttpStatus.OK).send(takenDates);
+            statusCode = HttpStatus.OK
         }
         else {
-            res.status(HttpStatus.UNAUTHORIZED).send();
+            statusCode = HttpStatus.FORBIDDEN;
         }
+
+        res.status(statusCode);
+        res.send(takenDates);
     }
     catch (error) {
         console.error("An error occurred: ", error);
@@ -80,16 +83,12 @@ export const createAppointment = asyncHandler(async (req, res) => {
         const freeMechanics: Mechanic[] = await getFreeMechanicsByTime(currentAppointmentTime);
         const availableMechanics = freeMechanics.filter((mechanic) => mechanic !== null);
 
-        let appointment;
-
         if (availableMechanics.length > 0) {
-            const user = await User.findOne({ username: req.user.username });
-
-            appointment = await AppointmentModel.create({
+            await AppointmentModel.create({
                 issue: currentAppointment.issue,
                 description: currentAppointment.description,
                 datetime: currentAppointment.datetime,
-                customer: user._id,
+                customer: currentAppointment.customer,
                 mechanic: availableMechanics[0]._id,
                 product: currentAppointment.product
             })
@@ -97,7 +96,7 @@ export const createAppointment = asyncHandler(async (req, res) => {
 
         const statusCode = availableMechanics.length > 0 ? HttpStatus.OK : HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE;
 
-        res.status(statusCode).send(appointment);
+        res.status(statusCode).send();
     }
     catch (error) {
         console.error("An error occurred: ", error);
@@ -188,7 +187,6 @@ export const deleteAppointment = asyncHandler(async (req, res) => {
 });
 
 export const getIssues = asyncHandler(async (req, res) => {
-
     try {
         if (!req.isAuthenticated()) {
             res.status(HttpStatus.UNAUTHORIZED).send();
@@ -240,7 +238,7 @@ class AppointmentTime {
     }
 
     getEndTime(): Date {
-        return new Date(this.datetime.getTime() + this.duration * 60 * 1000)
+        return new Date(this.datetime.getTime() + this.duration * 60 * 60 * 1000)
     }
 
     isSameDay(appointmentTime: AppointmentTime): boolean {
