@@ -14,7 +14,7 @@ export const getAppointments = asyncHandler(async (req, res) => {
 
         if (req.isAuthenticated()) {
             const user = await User.findOne({ username: req.user.username });
-            
+
             appointments = await AppointmentModel.find({ customer: user._id }).populate('issue').populate('issueCategory');
             res.status(HttpStatus.OK).send(appointments);
         }
@@ -28,15 +28,22 @@ export const getAppointments = asyncHandler(async (req, res) => {
     }
 })
 
-export const getTakenDates = asyncHandler(async (req, res) => {
+export const getAvailableDates = asyncHandler(async (req, res) => {
     try {
         let takenDates: Date[] = [];
 
         if (req.isAuthenticated()) {
             const appointments: Appointment[] = await AppointmentModel.find({});
             takenDates = appointments.map(appointment => appointment.datetime);
-            
-            res.status(HttpStatus.OK).send(takenDates);
+
+            const appointmentTimes: AppointmentTime[] = await Promise.all(appointments.map(async (appointmentId) => {
+                const appointment: Appointment = await AppointmentModel.findById(appointmentId);
+                const issue: Issue = await IssueModel.findById(appointment.issue);
+
+                return new AppointmentTime(appointment.datetime, issue.duration);
+            }));
+
+            res.status(HttpStatus.OK).send(calculateFreeTime(appointmentTimes));
         }
         else {
             res.status(HttpStatus.UNAUTHORIZED).send();
@@ -225,6 +232,52 @@ const getFreeMechanicsByTime = async (currentAppointmentTime: AppointmentTime) =
 
     return freeMechanics.filter(mechanic => mechanic !== null);
 }
+
+function calculateFreeTime(appointmentTimes: AppointmentTime[]): AppointmentTime[] {
+    const freeTimeSlots: AppointmentTime[] = [];
+
+    const startTime = new Date(); // Starting at 8:00 AM
+    startTime.setHours(8, 0, 0, 0);
+
+    const endTime = new Date(); // Ending at 10:00 PM
+    endTime.setHours(22, 0, 0, 0);
+
+    if (appointmentTimes.length === 0) {
+        // If there are no appointments, the entire time range is free.
+        return [new AppointmentTime(startTime, endTime.getTime() - startTime.getTime())];
+    }
+
+    // Sort the appointment times by datetime.
+    appointmentTimes.sort((a, b) => a.datetime.getTime() - b.datetime.getTime());
+
+    if (appointmentTimes[0].datetime > startTime) {
+        // If the first appointment is after the start time, there is free time before it.
+        freeTimeSlots.push(new AppointmentTime(startTime, appointmentTimes[0].datetime.getTime() - startTime.getTime()));
+    }
+
+    for (let i = 1; i < appointmentTimes.length; i++) {
+        const currentAppointment = appointmentTimes[i - 1];
+        const nextAppointment = appointmentTimes[i];
+
+        const freeTimeStart = currentAppointment.datetime.getTime() + currentAppointment.duration;
+        const freeTimeEnd = nextAppointment.datetime.getTime();
+
+        if (freeTimeStart < freeTimeEnd) {
+            const freeTime = new AppointmentTime(new Date(freeTimeStart), freeTimeEnd - freeTimeStart);
+            freeTimeSlots.push(freeTime);
+        }
+    }
+
+    if (appointmentTimes[appointmentTimes.length - 1].datetime.getTime() + appointmentTimes[appointmentTimes.length - 1].duration < endTime.getTime()) {
+        // If the last appointment ends before the end time, there is free time after it.
+        freeTimeSlots.push(new AppointmentTime(new Date(appointmentTimes[appointmentTimes.length - 1].datetime.getTime() + appointmentTimes[appointmentTimes.length - 1].duration),
+            endTime.getTime() - (appointmentTimes[appointmentTimes.length - 1].datetime.getTime() + appointmentTimes[appointmentTimes.length - 1].duration)));
+    }
+
+    return freeTimeSlots;
+}
+
+
 
 class AppointmentTime {
     datetime: Date
