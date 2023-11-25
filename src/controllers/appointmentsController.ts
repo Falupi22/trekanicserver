@@ -4,6 +4,7 @@ import asyncHandler from "express-async-handler";
 import Mechanic, { MechanicModel } from "../models/Mechanic.model";
 import Issue, { IssueModel } from "../models/Issue.model";
 import jsonpatch from "fast-json-patch";
+import { NumberSchema } from "joi";
 
 const openingTime: number = 8;
 const closingTime: number = 22
@@ -276,8 +277,6 @@ function calculateFreeTime(appointmentTimes: AppointmentTime[]): AppointmentTime
 
     return freeTimeSlots;
 }
-
-
 
 class AppointmentTime {
     datetime: Date
