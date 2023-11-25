@@ -234,6 +234,11 @@ const getFreeMechanicsByTime = async (currentAppointmentTime: AppointmentTime) =
     return freeMechanics.filter(mechanic => mechanic !== null);
 }
 
+/**
+ * Given the appointment, calculates the free time slots between them.
+ * @param appointmentTimes 
+ * @returns 
+ */
 function calculateFreeTime(appointmentTimes: AppointmentTime[]): AppointmentTime[] {
     const freeTimeSlots: AppointmentTime[] = [];
 
